@@ -1,143 +1,46 @@
-{ config, pkgs, ... }:{
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+    firefox
+    brave
+    wine
+    winetricks
+    bottles
+    handbrake
+    discord
+    spotdl
+    youtube-dl
+    gallery-dl
+    mpv
+    ffmpeg
+    spotify
+    calibre
+    moonlight-qt
+    steam
+  ];
 
-  boot = {
-    tmpOnTmpfs = true;
-    tmpOnTmpfsSize = "90%";
-    cleanTmpDir = true;
-    kernelPackages = pkgs.linuxPackages_zen;
-    kernelParams = [
-      "amd_iommu=on"
-      "iommu=pt"
-      "pcie_acs_override=downstream,multifunction"
-    ];
-    blacklistedKernelModules = [
-      "nvidia" "nouveau"
-    ];
-    kernelModules = [
-      "vfio_virqfd" "vfio_pci" "vfio_iommu_type1" "vfio"
-    ];
-    extraModprobeConfig = "options vfio-pci ids=10de:1c82,10de:0fb9";
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-  };
-  
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-  nix = {
-    package = pkgs.nixFlakes; # or versioned attributes like nix_2_7
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    autoOptimiseStore = true;
-  };
-  networking.hostName = "PinkDevil"; # Define your hostname.
-  networking.firewall.enable = false;
+  # List services that you want to enable:
 
-  time.timeZone = "Europe/Belgrade";
+  # Enable the OpenSSH daemon.
+  services.openssh.enable = true;
 
-  networking.useDHCP = false;
-  networking.interfaces.enp34s0.useDHCP = true;
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs;[fcitx5-mozc];
-  };
-
-  programs.dconf.enable = true;
-  services.xserver = {
-    enable = true;
-    displayManager.startx.enable = true;
-  };
-  environment.gnome = {
-    excludePackages = with pkgs;[];
-  };
-
-  hardware = {
-    pulseaudio.enable = false;
-    opengl = {
-      enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
-    };
-  };
-
-  services.zerotierone = {
-    enable = true;
-  };
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet -r --time --cmd sway";
-        user = "greeter";
-      };
-    };
-  };
-  xdg.portal = {
-    enable = true;
-    gtkUsePortal = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
-      xdg-desktop-portal-gtk
-    ];
-    wlr.enable = true;
-  };
-
-  sound.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
-
-  users.users.sera = {
-    isNormalUser = true;
-    extraGroups = [ "audio" "wheel" ];
-  };
-  nixpkgs = {
-    config= {
-      allowUnfree = true;
-    };
-  };
-
-  fonts = {
-    enableDefaultFonts = true;
-    fonts = with pkgs; [
-      noto-fonts
-      noto-fonts-cjk
-      noto-fonts-emoji
-      liberation_ttf
-      inconsolata
-      fira-code
-      fira-code-symbols
-    ];
-    fontconfig = {
-      defaultFonts = {
-        monospace = [ "Fira Code" ];
-        emoji = [ "Noto Color Emoji" ];
-      };
-  };
-  };
-  systemd.services = {
-    create-swapfile = {
-      serviceConfig.Type = "oneshot";
-      wantedBy = [ "swap-swapfile.swap" ];
-      script = ''
-        ${pkgs.coreutils}/bin/truncate -s 0 /swapfile
-        ${pkgs.e2fsprogs}/bin/chattr +C /swapfile
-        ${pkgs.btrfs-progs}/bin/btrfs property set /swapfile compression none
-      '';
-    };
-  };
-
-  system.stateVersion = "21.11";
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leavecatenate(variables, "bootdev", bootdev)
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "22.05"; # Did you read the comment?
 
 }
-
