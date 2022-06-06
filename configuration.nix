@@ -24,7 +24,7 @@
   boot.initrd.luks.devices."luks-e9221e52-a035-4a97-9ffc-903202d3565e".device = "/dev/disk/by-uuid/e9221e52-a035-4a97-9ffc-903202d3565e";
   boot.initrd.luks.devices."luks-e9221e52-a035-4a97-9ffc-903202d3565e".keyFile = "/crypto_keyfile.bin";
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "KemonoServer"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
