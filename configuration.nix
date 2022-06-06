@@ -34,6 +34,14 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
+  nix = {
+    package = pkgs.nixFlakes; # or versioned attributes like nix_2_7
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+    autoOptimiseStore = true;
+  };
+
   # Set your time zone.
   time.timeZone = "America/Monterrey";
 
@@ -137,7 +145,7 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
