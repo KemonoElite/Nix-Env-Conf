@@ -8,32 +8,34 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "ehci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  boot.initrd.luks.devices."luks-e4d05131-ee07-41cc-9d31-fdbd6ac75bba".device = "/dev/disk/by-uuid/e4d05131-ee07-41cc-9d31-fdbd6ac75bba";
+
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/9038158d-ef69-48a9-8234-33c6f070c266";
-      fsType = "btrfs";
+    { device = "/dev/disk/by-uuid/80642205-29e7-4bbb-8697-560b40cea301";
+      fsType = "ext4";
     };
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/73ff816c-0c3e-4182-b4a2-025c9155a64e";
-      fsType = "btrfs";
-    };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/0234-6585";
+  fileSystems."/boot/efi" =
+    { device = "/dev/disk/by-uuid/5666-B98E";
       fsType = "vfat";
     };
 
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = (1024 * 8) + (1024 * 2);
-    }
-  ];
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/d8880563-cb69-47ad-a946-5d760573691d"; }
+    ];
 
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
+  # (the default) this is the recommended approach. When using systemd-networkd it's
+  # still possible to use this option, but it's recommended to use it in conjunction
+  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+  networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp2s0.useDHCP = lib.mkDefault true;
+
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
